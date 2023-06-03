@@ -10,7 +10,7 @@ public class Conexion {
         if (conexion == null) {
             String url = "jdbc:mysql://localhost/prueba";
             String user = "root";
-            String pass = "";
+            String pass = "123456";
 
             try {
                 conexion = DriverManager.getConnection(url, user, pass);
