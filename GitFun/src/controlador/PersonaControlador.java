@@ -11,6 +11,11 @@ import javax.swing.JOptionPane;
 import modelo.Persona;
 import vista.PersonaVista;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author jhonm
@@ -29,8 +34,18 @@ public class PersonaControlador extends Persona implements ActionListener {
         this.vista.btnImprimir.addActionListener(this);
     }
 
+    private void capturaDatos(){
+    
+        setDocumento(Integer.parseInt(vista.txtDocumento.getText()));
+        setNombre(vista.txtNombre.getText());
+        setApellido(vista.txtApellido.getText());
+        setEmail(vista.txtEmail.getText());
+    }
+    
+    
     @Override
     public void actionPerformed(ActionEvent e) {
+        capturaDatos();
         switch (e.getActionCommand()) {
             case "guardar":
                 guardar();
@@ -42,33 +57,27 @@ public class PersonaControlador extends Persona implements ActionListener {
                 throw new AssertionError();
         }
     }
-    Persona p;
+   
 
     private void guardar() {
-//        setDocumento(Integer.parseInt(vista.txtDocumento.getText()));
-//        setNombre(vista.txtNombre.getText());
-//        setApellido(vista.txtApellido.getText());
-        if (!vista.txtDocumento.getText().equals("")) {
-            if (vista.txtEmail.getText().equals("")) {
-                p = new Persona(Integer.parseInt(vista.txtDocumento.getText()), vista.txtNombre.getText(), vista.txtApellido.getText());
-            } else {
-                p = new Persona(Integer.parseInt(vista.txtDocumento.getText()), vista.txtNombre.getText(), vista.txtApellido.getText(), vista.txtEmail.getText());
-            }
 
-            JOptionPane.showMessageDialog(vista, "Los datos se guardaron");
-            vista.txtDocumento.setText("");
-            vista.txtNombre.setText("");
-            vista.txtApellido.setText("");
-            vista.txtEmail.setText("");
-            
-        } else {
-            vista.lbDocumento.setForeground(Color.red);
+        String sql = "INSERT INTO personas VALUES(?,?,?,?)";
+        try {
+            PreparedStatement ps = Conexion.getConexion().prepareStatement(sql);
+            ps.setInt(1, getDocumento());
+            ps.setString(2, getNombre());
+            ps.setString(3, getApellido());
+            ps.setString(4, getEmail());
+            ps.execute();
+            JOptionPane.showMessageDialog(vista, "Se guardaron los datos.");
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(vista,ex);
         }
-
+        
     }
 
     private void imprimir() {
-        JOptionPane.showMessageDialog(vista, p.toString());
     }
 
 }
